@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from models.database import init_db, close_db
+from routes.auth import auth_bp
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,14 +14,15 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB limit
 
 jwt = JWTManager(app)
 
-# Ensure teardown handles SQLite connections properly
+# Register Blueprints
+app.register_blueprint(auth_bp)
+
 app.teardown_appcontext(close_db)
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
     return jsonify({"status": "healthy", "message": "Placement Portal API is running"}), 200
 
-# Catch-all route to serve Vue frontend (SPA entry point)
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_frontend(path):
