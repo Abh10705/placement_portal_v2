@@ -6,10 +6,14 @@ from routes.auth import auth_bp
 from routes.admin import admin_bp
 from routes.company import company_bp
 from routes.student import student_bp
+from flask_cors import CORS
+
+app = Flask(__name__)
+# Allow cross-origin requests from http://localhost:8080 with full headers/methods
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__, static_folder="../frontend")
 app.config["SECRET_KEY"] = "dev-abhi-placement-key"
 app.config["JWT_SECRET_KEY"] = "dev-abhi-jwt-secret-key"
 app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
@@ -36,7 +40,5 @@ def serve_frontend(path):
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, "index.html")
 
-if __name__ == "__main__":
-    with app.app_context():
-        init_db()
-    app.run(debug=True, port=5000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

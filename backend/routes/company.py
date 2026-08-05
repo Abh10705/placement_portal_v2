@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from models.database import get_db
 
 company_bp = Blueprint('company', __name__, url_prefix='/api/company')
 
-def verify_company(identity):
-    return identity.get('role') == 'company'
+def verify_company():
+    claims = get_jwt()
+    return claims.get('role') == 'company'
 
 def get_company_profile_id(user_id):
     db = get_db()
@@ -16,11 +17,11 @@ def get_company_profile_id(user_id):
 @company_bp.route('/drives', methods=['POST'])
 @jwt_required()
 def create_drive():
-    identity = get_jwt_identity()
-    if not verify_company(identity):
+    if not verify_company():
         return jsonify({"error": "Company access required"}), 403
 
-    comp = get_company_profile_id(identity['id'])
+    user_id = int(get_jwt_identity())
+    comp = get_company_profile_id(user_id)
     if not comp or comp['approval_status'] != 'approved':
         return jsonify({"error": "Company profile is not approved by admin yet"}), 403
 
@@ -49,11 +50,11 @@ def create_drive():
 @company_bp.route('/drives', methods=['GET'])
 @jwt_required()
 def get_my_drives():
-    identity = get_jwt_identity()
-    if not verify_company(identity):
+    if not verify_company():
         return jsonify({"error": "Company access required"}), 403
 
-    comp = get_company_profile_id(identity['id'])
+    user_id = int(get_jwt_identity())
+    comp = get_company_profile_id(user_id)
     if not comp:
         return jsonify({"error": "Company profile not found"}), 404
 
@@ -76,8 +77,7 @@ def get_my_drives():
 @company_bp.route('/drives/<int:drive_id>/applications', methods=['GET'])
 @jwt_required()
 def get_drive_applications(drive_id):
-    identity = get_jwt_identity()
-    if not verify_company(identity):
+    if not verify_company():
         return jsonify({"error": "Company access required"}), 403
 
     db = get_db()
@@ -100,8 +100,7 @@ def get_drive_applications(drive_id):
 @company_bp.route('/applications/<int:app_id>/status', methods=['POST'])
 @jwt_required()
 def update_application_status(app_id):
-    identity = get_jwt_identity()
-    if not verify_company(identity):
+    if not verify_company():
         return jsonify({"error": "Company access required"}), 403
 
     data = request.get_json() or {}

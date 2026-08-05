@@ -3,26 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Placement Portal</title>
-  <!-- Bootstrap 5 CSS -->
+  <title>Placement Portal Application</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Vue 3 CDN -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body class="bg-light">
-  <div id="app" class="container py-5 text-center">
-    <h1 class="display-5 fw-bold text-primary">Placement Portal Application</h1>
-    <p class="lead mt-3">{{ message }}</p>
-    <div class="badge bg-success fs-6 mt-2">Vue 3 + Bootstrap Loaded Successfully</div>
+  <div id="app">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Placement Portal</a>
+        <div v-if="user" class="d-flex align-items-center">
+          <span class="text-light me-3">Role: <strong class="text-capitalize">{{ user.role }}</strong></span>
+          <button @click="logout" class="btn btn-outline-light btn-sm">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-2">
+      <login-view v-if="!user" @logged-in="handleLoggedIn"></login-view>
+
+      <div v-else>
+        <admin-dashboard v-if="user.role === 'admin'"></admin-dashboard>
+        <company-dashboard v-if="user.role === 'company'"></company-dashboard>
+        <student-dashboard v-if="user.role === 'student'"></student-dashboard>
+      </div>
+    </div>
   </div>
 
+  <script src="/src/components/Login.js"></script>
+  <script src="/src/components/AdminDashboard.js"></script>
+  <script src="/src/components/CompanyDashboard.js"></script>
+  <script src="/src/components/StudentDashboard.js"></script>
   <script>
     const { createApp } = Vue;
+
     createApp({
+      components: {
+        'login-view': Login,
+        'admin-dashboard': AdminDashboard,
+        'company-dashboard': CompanyDashboard,
+        'student-dashboard': StudentDashboard
+      },
       data() {
         return {
-          message: "Welcome to the Institute Placement Portal"
+          user: JSON.parse(localStorage.getItem('user')) || null
         };
+      },
+      methods: {
+        handleLoggedIn(userData) {
+          this.user = userData;
+        },
+        logout() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          this.user = null;
+        }
       }
     }).mount('#app');
   </script>

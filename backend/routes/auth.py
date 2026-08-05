@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from models.database import get_db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -94,7 +94,6 @@ def login():
     if not user:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    # Check hardcoded plain admin password or hashed passwords
     is_valid_pwd = False
     if user['role'] == 'admin' and user['password_hash'] == password:
         is_valid_pwd = True
@@ -110,7 +109,10 @@ def login():
     if not user['is_active']:
         return jsonify({"error": "Account is deactivated."}), 403
 
-    token = create_access_token(identity={"id": user['id'], "email": user['email'], "role": user['role']})
+    token = create_access_token(
+        identity=str(user['id']),
+        additional_claims={"role": user['role'], "email": user['email']}
+    )
 
     return jsonify({
         "message": "Login successful",

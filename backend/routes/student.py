@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from datetime import datetime
 from models.database import get_db
 
 student_bp = Blueprint('student', __name__, url_prefix='/api/student')
 
-def verify_student(identity):
-    return identity.get('role') == 'student'
+def verify_student():
+    claims = get_jwt()
+    return claims.get('role') == 'student'
 
 def get_student_profile_id(user_id):
     db = get_db()
@@ -18,8 +19,7 @@ def get_student_profile_id(user_id):
 @student_bp.route('/drives', methods=['GET'])
 @jwt_required()
 def get_approved_drives():
-    identity = get_jwt_identity()
-    if not verify_student(identity):
+    if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
     db = get_db()
@@ -39,11 +39,11 @@ def get_approved_drives():
 @student_bp.route('/drives/<int:drive_id>/apply', methods=['POST'])
 @jwt_required()
 def apply_to_drive(drive_id):
-    identity = get_jwt_identity()
-    if not verify_student(identity):
+    if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
-    student_id = get_student_profile_id(identity['id'])
+    user_id = int(get_jwt_identity())
+    student_id = get_student_profile_id(user_id)
     if not student_id:
         return jsonify({"error": "Student profile not found"}), 404
 
@@ -66,11 +66,11 @@ def apply_to_drive(drive_id):
 @student_bp.route('/applications', methods=['GET'])
 @jwt_required()
 def get_my_applications():
-    identity = get_jwt_identity()
-    if not verify_student(identity):
+    if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
-    student_id = get_student_profile_id(identity['id'])
+    user_id = int(get_jwt_identity())
+    student_id = get_student_profile_id(user_id)
     if not student_id:
         return jsonify({"error": "Student profile not found"}), 404
 
@@ -94,10 +94,10 @@ def get_my_applications():
 @student_bp.route('/profile', methods=['POST'])
 @jwt_required()
 def update_profile():
-    identity = get_jwt_identity()
-    if not verify_student(identity):
+    if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
+    user_id = int(get_jwt_identity())
     data = request.get_json() or {}
     roll_no = data.get('roll_no')
     branch = data.get('branch')
@@ -112,8 +112,27 @@ def update_profile():
         SET roll_no = ?, branch = ?, cgpa = ?, phone = ? 
         WHERE user_id = ?
         """,
-        (roll_no, branch, cgpa, phone, identity['id'])
+        (roll_no, branch, cgpa, phone, user_id)
     )
     db.commit()
 
     return jsonify({"message": "Profile updated successfully"}), 200
+
+@student_bp.route('/export-csv', methods=['POST'])
+@jwt_required()
+def trigger_csv_export():
+    if not verify_student():
+        return jsonify({"error": "Student access required"}), 403
+
+    user_id = int(get_jwt_identity())
+    student_id = get_student_profile_id(user_id)
+    if not student_id:
+        return jsonify({"error": "Student profile not found"}), 404
+
+    from tasks import export_student_applications_csv
+    task = export_student_applications_csv.delay(student_id)
+
+    return jsonify({
+        "message": "Application export triggered in background.",
+        "task_id": task.id
+    }), 202

@@ -1,17 +1,17 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt
 from models.database import get_db
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
-def verify_admin(identity):
-    return identity.get('role') == 'admin'
+def verify_admin():
+    claims = get_jwt()
+    return claims.get('role') == 'admin'
 
 @admin_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_stats():
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     db = get_db()
@@ -35,8 +35,7 @@ def get_stats():
 @admin_bp.route('/companies/pending', methods=['GET'])
 @jwt_required()
 def get_pending_companies():
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     db = get_db()
@@ -54,8 +53,7 @@ def get_pending_companies():
 @admin_bp.route('/companies/<int:company_id>/<string:action>', methods=['POST'])
 @jwt_required()
 def handle_company_approval(company_id, action):
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     if action not in ['approve', 'reject']:
@@ -72,8 +70,7 @@ def handle_company_approval(company_id, action):
 @admin_bp.route('/drives/pending', methods=['GET'])
 @jwt_required()
 def get_pending_drives():
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     db = get_db()
@@ -91,8 +88,7 @@ def get_pending_drives():
 @admin_bp.route('/drives/<int:drive_id>/<string:action>', methods=['POST'])
 @jwt_required()
 def handle_drive_approval(drive_id, action):
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     if action not in ['approve', 'reject']:
@@ -109,8 +105,7 @@ def handle_drive_approval(drive_id, action):
 @admin_bp.route('/users/<int:user_id>/toggle-blacklist', methods=['POST'])
 @jwt_required()
 def toggle_blacklist(user_id):
-    identity = get_jwt_identity()
-    if not verify_admin(identity):
+    if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 
     db = get_db()
@@ -125,3 +120,43 @@ def toggle_blacklist(user_id):
     db.commit()
 
     return jsonify({"message": "User status updated", "is_blacklisted": new_status}), 200
+
+@admin_bp.route('/users', methods=['GET'])
+@jwt_required()
+def get_all_users():
+    if not verify_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT id, email, role, is_blacklisted FROM user WHERE role != 'admin'")
+    rows = cur.fetchall()
+    users = [dict(row) for row in rows]
+    return jsonify(users), 200
+
+@admin_bp.route('/users', methods=['GET'])
+@jwt_required()
+def get_all_users():
+    if not verify_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT id, email, role, is_blacklisted FROM user WHERE role != 'admin'")
+    rows = cur.fetchall()
+    users = [dict(row) for row in rows]
+    return jsonify(users), 200
+
+@admin_bp.route('/trigger-report', methods=['POST'])
+@jwt_required()
+def trigger_admin_report():
+    if not verify_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    from tasks import generate_monthly_report
+    task = generate_monthly_report.delay()
+
+    return jsonify({
+        "message": "Monthly report task triggered successfully.",
+        "task_id": task.id
+    }), 202
