@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Student Registration</h1>
+<form method="post">
+    <label>Full name: <input type="text" name="full_name" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <label>Roll number: <input type="text" name="roll_no"></label><br>
+    <label>Branch: <input type="text" name="branch"></label><br>
+    <label>Phone: <input type="text" name="phone"></label><br>
+    <button type="submit">Register</button>
+</form>
+<p><a href="{{ url_for('login') }}">Back to login</a></p>
+{% endblock %}

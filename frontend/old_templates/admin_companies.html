@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Manage Companies</h1>
+<form method="get">
+    <label>Search (company name or email):
+        <input type="text" name="q" value="{{ query or '' }}">
+    </label>
+    <button type="submit">Search</button>
+</form>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Company</th>
+        <th>Email</th>
+        <th>HR Contact</th>
+        <th>Website</th>
+        <th>Approval</th>
+        <th>Blacklisted</th>
+        <th>Actions</th>
+    </tr>
+    {% for c in companies %}
+    <tr>
+        <td>{{ c.id }}</td>
+        <td>{{ c.company_name }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.hr_contact }}</td>
+        <td>{{ c.website }}</td>
+        <td>{{ c.approval_status }}</td>
+        <td>{{ 'Yes' if c.is_blacklisted else 'No' }}</td>
+        <td>
+            <form method="post" action="{{ url_for('admin_approve_company', company_id=c.id) }}" style="display:inline">
+                <button type="submit">Approve</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_reject_company', company_id=c.id) }}" style="display:inline">
+                <button type="submit">Reject</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_toggle_blacklist_company', company_id=c.id) }}" style="display:inline">
+                <button type="submit">
+                    {{ 'Unblacklist' if c.is_blacklisted else 'Blacklist' }}
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('admin_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}
+<p><a href="{{ url_for('admin_companies') }}">Manage companies</a></p>

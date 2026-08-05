@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+
+<ul>
+    <li>Total students: {{ counts.get('student', 0) }}</li>
+    <li>Total companies: {{ counts.get('company', 0) }}</li>
+    <li>Total admins: {{ counts.get('admin', 0) }}</li>
+    <li>Total placement drives: {{ total_drives }}</li>
+    <li>Total applications: {{ total_applications }}</li>
+</ul>
+
+<p><a href="{{ url_for('admin_companies') }}">Manage companies</a></p>
+<p><a href="{{ url_for('admin_students') }}">Manage students</a></p>
+<p><a href="{{ url_for('admin_drives') }}">Manage drives</a></p>
+
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
+
+<p><a href="{{ url_for('admin_applications') }}">View all applications</a></p>
+
+
+{% endblock %}

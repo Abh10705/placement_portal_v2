@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Company Account Status</h1>
+
+<p>Your company account is currently: <strong>{{ status }}</strong></p>
+
+{% if status == 'pending' %}
+    <p>Please wait for the admin to review and approve your registration.</p>
+{% elif status == 'rejected' %}
+    <p>Your registration was rejected. Contact the placement cell for details.</p>
+{% endif %}
+
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Company Dashboard</h1>
+
+<p>Company: {{ company.company_name }}</p>
+<p>Approval status: {{ company.approval_status }}</p>
+
+{% if company.approval_status == 'approved' %}
+    <p><a href="{{ url_for('company_new_drive') }}">Create new placement drive</a></p>
+{% else %}
+    <p>You cannot create drives until admin approves your company.</p>
+{% endif %}
+
+<h2>Your placement drives</h2>
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Job Title</th>
+        <th>Status</th>
+        <th>Deadline</th>
+        <th>Applicants</th>
+        <th>Actions</th>
+    </tr>
+    {% for d in drives %}
+    <tr>
+        <td>{{ d.id }}</td>
+        <td>{{ d.job_title }}</td>
+        <td>{{ d.status }}</td>
+        <td>{{ d.application_deadline }}</td>
+        <td>{{ d.applicant_count }}</td>
+        <td>
+            <a href="{{ url_for('company_view_applications', drive_id=d.id) }}">
+                View applications
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
+{% endblock %}

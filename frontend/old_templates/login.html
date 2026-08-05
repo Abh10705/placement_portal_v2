@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Login</h1>
+<form method="post">
+    <label>Email:
+        <input type="text" name="email" required>
+    </label><br>
+    <label>Password:
+        <input type="password" name="password" required>
+    </label><br>
+    <button type="submit">Sign in</button>
+</form>
+
+<p>New here?</p>
+<ul>
+    <li><a href="{{ url_for('register_student') }}">Student registration</a></li>
+    <li><a href="{{ url_for('register_company') }}">Company registration</a></li>
+</ul>
+{% endblock %}

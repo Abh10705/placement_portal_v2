@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Student Dashboard</h1>
+<p><a href="{{ url_for('student_profile') }}">Edit profile / resume</a></p>
+
+<h2>Approved Placement Drives</h2>
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Company</th>
+        <th>Job Title</th>
+        <th>Deadline</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    {% for d in drives %}
+    <tr>
+        <td>{{ d.id }}</td>
+        <td>{{ d.company_name }}</td>
+        <td>{{ d.job_title }}</td>
+        <td>{{ d.application_deadline }}</td>
+        <td>{{ d.status }}</td>
+        <td>
+            {% if d.id in applied_ids %}
+                Already applied
+            {% else %}
+                <form method="post" action="{{ url_for('student_apply', drive_id=d.id) }}">
+                    <button type="submit">Apply</button>
+                </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
+{% endblock %}
+
+<p><a href="{{ url_for('student_applications') }}">View my applications</a></p>

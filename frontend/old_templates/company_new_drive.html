@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create Placement Drive</h1>
+<form method="post">
+    <label>Job title:
+        <input type="text" name="job_title" required>
+    </label><br>
+    <label>Job description:<br>
+        <textarea name="job_description" rows="4" cols="40"></textarea>
+    </label><br>
+    <label>Eligibility:
+        <input type="text" name="eligibility">
+    </label><br>
+    <label>Application deadline (e.g. 2026-03-31):
+        <input type="text" name="application_deadline">
+    </label><br>
+    <button type="submit">Create</button>
+</form>
+
+<p><a href="{{ url_for('company_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Manage Students</h1>
+
+<form method="get">
+    <label>Search (name, email, roll, phone):
+        <input type="text" name="q" value="{{ query or '' }}">
+    </label>
+    <button type="submit">Search</button>
+</form>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Roll No</th>
+        <th>Branch</th>
+        <th>Phone</th>
+        <th>Blacklisted</th>
+        <th>Actions</th>
+    </tr>
+    {% for s in students %}
+    <tr>
+        <td>{{ s.id }}</td>
+        <td>{{ s.full_name }}</td>
+        <td>{{ s.email }}</td>
+        <td>{{ s.roll_no }}</td>
+        <td>{{ s.branch }}</td>
+        <td>{{ s.phone }}</td>
+        <td>{{ 'Yes' if s.is_blacklisted else 'No' }}</td>
+        <td>
+            <form method="post" action="{{ url_for('admin_toggle_blacklist_student', student_id=s.id) }}">
+                <button type="submit">
+                    {{ 'Unblacklist' if s.is_blacklisted else 'Blacklist' }}
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('admin_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}

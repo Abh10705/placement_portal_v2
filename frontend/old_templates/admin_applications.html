@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>All Applications</h1>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Student</th>
+        <th>Roll No</th>
+        <th>Company</th>
+        <th>Job Title</th>
+        <th>Applied At</th>
+        <th>Deadline</th>
+        <th>Status</th>
+    </tr>
+    {% for a in applications %}
+    <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.student_name }}</td>
+        <td>{{ a.roll_no }}</td>
+        <td>{{ a.company_name }}</td>
+        <td>{{ a.job_title }}</td>
+        <td>{{ a.applied_at }}</td>
+        <td>{{ a.application_deadline }}</td>
+        <td>{{ a.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('admin_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}

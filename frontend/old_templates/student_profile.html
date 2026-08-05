@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>My Profile</h1>
+
+<form method="post" enctype="multipart/form-data">
+    <p>
+        <label>Full name:
+            <input type="text" name="full_name" value="{{ student.full_name }}" required>
+        </label>
+    </p>
+    <p>
+        <label>Email (read-only):
+            <input type="email" value="{{ student.email }}" readonly>
+        </label>
+    </p>
+    <p>
+        <label>Roll number:
+            <input type="text" name="roll_no" value="{{ student.roll_no or '' }}">
+        </label>
+    </p>
+    <p>
+        <label>Branch:
+            <input type="text" name="branch" value="{{ student.branch or '' }}">
+        </label>
+    </p>
+    <p>
+        <label>CGPA:
+            <input type="text" name="cgpa" value="{{ student.cgpa or '' }}">
+        </label>
+    </p>
+    <p>
+        <label>Phone:
+            <input type="text" name="phone" value="{{ student.phone or '' }}">
+        </label>
+    </p>
+    <p>
+        <label>Upload resume (PDF/DOC/DOCX):
+            <input type="file" name="resume">
+        </label>
+    </p>
+    {% if student.resume_path %}
+        <p>Current resume:
+            <a href="{{ url_for('static', filename=student.resume_path) }}" target="_blank">
+                Download / view
+            </a>
+        </p>
+    {% endif %}
+    <button type="submit">Save</button>
+</form>
+
+<p><a href="{{ url_for('student_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}

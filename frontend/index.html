@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placement Portal</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="bg-light">
+  <div id="app" class="container py-5 text-center">
+    <h1 class="display-5 fw-bold text-primary">Placement Portal Application</h1>
+    <p class="lead mt-3">{{ message }}</p>
+    <div class="badge bg-success fs-6 mt-2">Vue 3 + Bootstrap Loaded Successfully</div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          message: "Welcome to the Institute Placement Portal"
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

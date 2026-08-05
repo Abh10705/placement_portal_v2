@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Manage Placement Drives</h1>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Company</th>
+        <th>Job Title</th>
+        <th>Status</th>
+        <th>Deadline</th>
+        <th>Actions</th>
+    </tr>
+    {% for d in drives %}
+    <tr>
+        <td>{{ d.id }}</td>
+        <td>{{ d.company_name }}</td>
+        <td>{{ d.job_title }}</td>
+        <td>{{ d.status }}</td>
+        <td>{{ d.application_deadline }}</td>
+        <td>
+            <form method="post" action="{{ url_for('admin_approve_drive', drive_id=d.id) }}" style="display:inline">
+                <button type="submit">Approve</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_reject_drive', drive_id=d.id) }}" style="display:inline">
+                <button type="submit">Reject</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_close_drive', drive_id=d.id) }}" style="display:inline">
+                <button type="submit">Close</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('admin_dashboard') }}">Back to dashboard</a></p>
+{% endblock %}

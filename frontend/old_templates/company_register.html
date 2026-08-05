@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Company Registration</h1>
+<form method="post">
+    <label>Company name: <input type="text" name="company_name" required></label><br>
+    <label>Contact person: <input type="text" name="contact_person" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <label>HR contact phone: <input type="text" name="hr_contact"></label><br>
+    <label>Website: <input type="text" name="website"></label><br>
+    <button type="submit">Register</button>
+</form>
+<p><a href="{{ url_for('login') }}">Back to login</a></p>
+{% endblock %}
+<p><a href="{{ url_for('register_student') }}">Student sign up</a></p>
+<p><a href="{{ url_for('register_company') }}">Company sign up</a></p>

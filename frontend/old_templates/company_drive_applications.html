@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Applications for {{ drive.job_title }} ({{ drive.company_name }})</h1>
+
+<table border="1" cellpadding="4">
+    <tr>
+        <th>ID</th>
+        <th>Student</th>
+        <th>Roll No</th>
+        <th>Email</th>
+        <th>Applied At</th>
+        <th>Status</th>
+        <th>Update</th>
+    </tr>
+    {% for a in applicants %}
+    <tr>
+        <td>{{ a.application_id }}</td>
+        <td>{{ a.full_name }}</td>
+        <td>{{ a.roll_no }}</td>
+        <td>{{ a.email }}</td>
+        <td>{{ a.applied_at }}</td>
+        <td>{{ a.status }}</td>
+        <td>
+            <form method="post" action="{{ url_for('company_update_application', application_id=a.application_id) }}">
+                <select name="status">
+                    <option value="applied"     {% if a.status == 'applied' %}selected{% endif %}>Applied</option>
+                    <option value="shortlisted" {% if a.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                    <option value="selected"    {% if a.status == 'selected' %}selected{% endif %}>Selected</option>
+                    <option value="rejected"    {% if a.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <button type="submit">Save</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{{ url_for('company_dashboard') }}">Back to company dashboard</a></p>
+{% endblock %}
