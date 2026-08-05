@@ -3,6 +3,7 @@ from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from models.database import init_db, close_db
 from routes.auth import auth_bp
+from routes.admin import admin_bp
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,6 +17,7 @@ jwt = JWTManager(app)
 
 # Register Blueprints
 app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
 
 app.teardown_appcontext(close_db)
 
