@@ -18,7 +18,7 @@ const StudentDashboard = {
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-dark text-white fw-bold">My Profile & Resume</div>
         <div class="card-body">
-          <div v-if="profileMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+          <div v-if="profileMessage" :class="['alert', profileError ? 'alert-danger' : 'alert-success', 'alert-dismissible', 'fade', 'show']" role="alert">
             {{ profileMessage }}
             <button type="button" class="btn-close" @click="profileMessage = ''"></button>
           </div>
@@ -47,9 +47,7 @@ const StudentDashboard = {
               <input type="file" ref="resumeInput" @change="handleFileUpload" accept="application/pdf" class="form-control">
               <div v-if="profile.resume_path" class="form-text text-success">
                 Current Resume: 
-                <a :href="'http://localhost:5000/api/student/resume/' + profile.resume_path" target="_blank" class="fw-bold">
-                  View PDF
-                </a>
+                <button type="button" @click="viewPdf" class="btn btn-link p-0 fw-bold align-baseline">View PDF</button>
               </div>
             </div>
 
@@ -63,72 +61,81 @@ const StudentDashboard = {
         </div>
       </div>
 
-      <!-- Approved Placement Drives with Search & Filter -->
+      <!-- Available Placement Drives -->
       <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <span class="fw-bold">Available Placement Drives</span>
+        <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
+          <span>Available Placement Drives</span>
           <div class="d-flex gap-2">
             <input type="text" v-model="searchQuery" class="form-control form-control-sm" placeholder="Search title or company...">
             <input type="text" v-model="eligibilityFilter" class="form-control form-control-sm" placeholder="Filter eligibility...">
           </div>
         </div>
-        <div class="card-body">
-          <div class="row" v-if="filteredDrives.length">
-            <div class="col-md-6 mb-3" v-for="drive in filteredDrives" :key="drive.id">
-              <div class="card h-100 border-light shadow-sm">
-                <div class="card-body">
-                  <h5 class="card-title text-primary">{{ drive.job_title }}</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">{{ drive.company_name }}</h6>
-                  <p class="card-text mb-1"><strong>Eligibility:</strong> {{ drive.eligibility }}</p>
-                  <p class="card-text mb-2"><strong>Deadline:</strong> {{ drive.application_deadline }}</p>
-                  <button @click="applyForDrive(drive.id)" class="btn btn-sm btn-primary" :disabled="hasApplied(drive.id)">
-                    {{ hasApplied(drive.id) ? 'Applied' : 'Apply Now' }}
-                  </button>
-                </div>
-              </div>
-            </div>
+        <div class="card-body p-0">
+          <div v-if="filteredDrives.length === 0" class="p-3 text-muted">
+            No matching placement drives found.
           </div>
-          <p v-else class="text-muted m-0">No matching placement drives found.</p>
-        </div>
-      </div>
-
-      <!-- Application History -->
-      <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-secondary text-white fw-bold">My Application History</div>
-        <div class="card-body">
-          <table class="table table-hover" v-if="applications.length">
-            <thead>
+          <table v-else class="table table-hover mb-0">
+            <thead class="table-light">
               <tr>
-                <th>Drive Title</th>
                 <th>Company</th>
-                <th>Applied At</th>
-                <th>Status</th>
+                <th>Role Title</th>
+                <th>Eligibility</th>
+                <th>Deadline</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="app in applications" :key="app.id">
-                <td>{{ app.job_title }}</td>
-                <td>{{ app.company_name }}</td>
-                <td>{{ app.applied_at }}</td>
+              <tr v-for="drive in filteredDrives" :key="drive.id">
+                <td>{{ drive.company_name }}</td>
+                <td>{{ drive.job_title }}</td>
+                <td>{{ drive.eligibility }}</td>
+                <td>{{ drive.application_deadline }}</td>
                 <td>
-                  <span class="badge" :class="statusBadgeClass(app.status)">{{ app.status }}</span>
+                  <button @click="applyToDrive(drive.id)" class="btn btn-sm btn-outline-primary" :disabled="hasApplied(drive.id)">
+                    {{ hasApplied(drive.id) ? 'Applied' : 'Apply Now' }}
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <p v-else class="text-muted m-0">You have not applied to any drives yet.</p>
+        </div>
+      </div>
+
+      <!-- Application History -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white fw-bold">My Application History</div>
+        <div class="card-body p-0">
+          <div v-if="applications.length === 0" class="p-3 text-muted">
+            You have not applied to any drives yet.
+          </div>
+          <table v-else class="table table-striped mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Company</th>
+                <th>Role Title</th>
+                <th>Applied On</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="app in applications" :key="app.application_id">
+                <td>{{ app.company_name }}</td>
+                <td>{{ app.job_title }}</td>
+                <td>{{ app.applied_at }}</td>
+                <td>
+                  <span :class="['badge', app.status === 'applied' ? 'bg-info' : app.status === 'shortlisted' ? 'bg-success' : 'bg-secondary']">
+                    {{ app.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   `,
   data() {
     return {
-      drives: [],
-      applications: [],
-      searchQuery: '',
-      eligibilityFilter: '',
-      exporting: false,
-      exportMessage: '',
       profile: {
         roll_no: '',
         branch: '',
@@ -136,20 +143,26 @@ const StudentDashboard = {
         phone: '',
         resume_path: ''
       },
-      selectedFile: null,
+      resumeFile: null,
+      drives: [],
+      applications: [],
+      searchQuery: '',
+      eligibilityFilter: '',
+      profileMessage: '',
+      profileError: false,
       savingProfile: false,
-      profileMessage: ''
+      exporting: false,
+      exportMessage: ''
     };
   },
   computed: {
     filteredDrives() {
-      return this.drives.filter(d => {
-        const matchesSearch = !this.searchQuery || 
-          d.job_title.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-          d.company_name.toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchesEligibility = !this.eligibilityFilter || 
-          d.eligibility.toLowerCase().includes(this.eligibilityFilter.toLowerCase());
-        return matchesSearch && matchesEligibility;
+      return this.drives.filter(drive => {
+        const titleMatch = drive.job_title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                           drive.company_name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const eligibilityMatch = !this.eligibilityFilter || 
+                                 drive.eligibility.toLowerCase().includes(this.eligibilityFilter.toLowerCase());
+        return titleMatch && eligibilityMatch;
       });
     }
   },
@@ -159,81 +172,126 @@ const StudentDashboard = {
     this.fetchApplications();
   },
   methods: {
+    getAuthHeaders() {
+      const token = localStorage.getItem('token');
+      return { 'Authorization': `Bearer ${token}` };
+    },
     async fetchProfile() {
-      const res = await fetch('http://localhost:5000/api/student/profile', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        this.profile = {
-          roll_no: data.roll_no || '',
-          branch: data.branch || '',
-          cgpa: data.cgpa || '',
-          phone: data.phone || '',
-          resume_path: data.resume_path || ''
-        };
+      try {
+        const res = await fetch('http://localhost:5000/api/student/profile', {
+          headers: this.getAuthHeaders()
+        });
+        if (res.ok) {
+          const data = await res.json();
+          this.profile = {
+            roll_no: data.roll_no || '',
+            branch: data.branch || '',
+            cgpa: data.cgpa || '',
+            phone: data.phone || '',
+            resume_path: data.resume_path || ''
+          };
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile', err);
+      }
+    },
+    async fetchDrives() {
+      try {
+        const res = await fetch('http://localhost:5000/api/student/drives', {
+          headers: this.getAuthHeaders()
+        });
+        if (res.ok) {
+          this.drives = await res.json();
+        }
+      } catch (err) {
+        console.error('Failed to fetch drives', err);
+      }
+    },
+    async fetchApplications() {
+      try {
+        const res = await fetch('http://localhost:5000/api/student/applications', {
+          headers: this.getAuthHeaders()
+        });
+        if (res.ok) {
+          this.applications = await res.json();
+        }
+      } catch (err) {
+        console.error('Failed to fetch applications', err);
       }
     },
     handleFileUpload(event) {
-      this.selectedFile = event.target.files[0];
+      this.resumeFile = event.target.files[0];
     },
     async updateProfile() {
       this.savingProfile = true;
       this.profileMessage = '';
+      this.profileError = false;
 
       const formData = new FormData();
       formData.append('roll_no', this.profile.roll_no);
       formData.append('branch', this.profile.branch);
       formData.append('cgpa', this.profile.cgpa);
       formData.append('phone', this.profile.phone);
-
-      if (this.selectedFile) {
-        formData.append('resume', this.selectedFile);
+      if (this.resumeFile) {
+        formData.append('resume', this.resumeFile);
       }
 
       try {
         const res = await fetch('http://localhost:5000/api/student/profile', {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
+          headers: this.getAuthHeaders(),
           body: formData
         });
 
+        const data = await res.json();
         if (res.ok) {
           this.profileMessage = 'Profile updated successfully!';
           this.fetchProfile();
         } else {
-          this.profileMessage = 'Failed to update profile.';
+          this.profileError = true;
+          this.profileMessage = data.error || 'Failed to update profile.';
         }
       } catch (err) {
-        this.profileMessage = 'Error updating profile.';
+        this.profileError = true;
+        this.profileMessage = 'Network error while updating profile.';
       } finally {
         this.savingProfile = false;
       }
     },
-    async fetchDrives() {
-      const res = await fetch('http://localhost:5000/api/student/drives', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) this.drives = await res.json();
-    },
-    async fetchApplications() {
-      const res = await fetch('http://localhost:5000/api/student/applications', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) this.applications = await res.json();
+    async viewPdf() {
+      if (!this.profile.resume_path) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/student/resume/${this.profile.resume_path}`, {
+          headers: this.getAuthHeaders()
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const fileUrl = URL.createObjectURL(blob);
+          window.open(fileUrl, '_blank');
+        } else {
+          alert('Could not open PDF file.');
+        }
+      } catch (err) {
+        console.error('Error opening PDF:', err);
+      }
     },
     hasApplied(driveId) {
-      return this.applications.some(a => a.drive_id === driveId);
+      return this.applications.some(app => app.drive_id === driveId);
     },
-    async applyForDrive(driveId) {
-      const res = await fetch(`http://localhost:5000/api/student/drives/${driveId}/apply`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) {
-        this.fetchApplications();
+    async applyToDrive(driveId) {
+      try {
+        const res = await fetch(`http://localhost:5000/api/student/drives/${driveId}/apply`, {
+          method: 'POST',
+          headers: this.getAuthHeaders()
+        });
+        if (res.ok) {
+          this.fetchApplications();
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Failed to apply');
+        }
+      } catch (err) {
+        console.error('Error applying to drive:', err);
       }
     },
     async triggerCsvExport() {
@@ -242,26 +300,18 @@ const StudentDashboard = {
       try {
         const res = await fetch('http://localhost:5000/api/student/export-csv', {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          headers: this.getAuthHeaders()
         });
         const data = await res.json();
         if (res.ok) {
-          this.exportMessage = `Export job started! Task ID: ${data.task_id}`;
+          this.exportMessage = `${data.message} (Task ID: ${data.task_id})`;
         } else {
-          this.exportMessage = 'Failed to start export task.';
+          this.exportMessage = data.error || 'Failed to trigger export.';
         }
       } catch (err) {
-        this.exportMessage = 'Error triggering export.';
+        this.exportMessage = 'Error connecting to server for CSV export.';
       } finally {
         this.exporting = false;
-      }
-    },
-    statusBadgeClass(status) {
-      switch (status ? status.toLowerCase() : '') {
-        case 'selected': return 'bg-success';
-        case 'shortlisted': return 'bg-info text-dark';
-        case 'rejected': return 'bg-danger';
-        default: return 'bg-warning text-dark';
       }
     }
   }

@@ -88,6 +88,12 @@ def get_pending_drives():
 @admin_bp.route('/drives/<int:drive_id>/<string:action>', methods=['POST'])
 @jwt_required()
 def handle_drive_approval(drive_id, action):
+    from app import cache
+    try:
+        cache.delete("student_drives_list")
+    except Exception:
+        pass
+    cache.delete("student_drives_list")
     if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 

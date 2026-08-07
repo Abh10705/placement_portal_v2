@@ -31,7 +31,10 @@ def get_approved_drives():
 
     from app import cache
     
-    cached_drives = cache.get("student_drives_list")
+    try:
+        cached_drives = cache.get("student_drives_list")
+    except Exception:
+        cached_drives = None
     if cached_drives is not None:
         return jsonify(cached_drives), 200
 
@@ -158,6 +161,8 @@ def update_profile():
         if file and allowed_file(file.filename):
             filename = secure_filename(f"student_{user_id}_{file.filename}")
             filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            
+            os.makedirs(os.path.dirname(filepath), exist_ok=True)
             file.save(filepath)
             resume_path = filename
 
