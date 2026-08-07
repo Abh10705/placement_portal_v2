@@ -141,7 +141,7 @@ def get_all_users():
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT id, email, role, is_blacklisted FROM user WHERE role != 'admin'")
+    cur.execute("SELECT id, email, role, is_active, is_blacklisted, is_approved FROM user WHERE role != 'admin' AND (role != 'student' OR is_approved = 1)")
     rows = cur.fetchall()
     users = [dict(row) for row in rows]
     return jsonify(users), 200
@@ -159,3 +159,45 @@ def trigger_admin_report():
         "message": "Monthly report task triggered successfully.",
         "task_id": task.id
     }), 202
+
+
+@admin_bp.route('/students/pending', methods=['GET'])
+@jwt_required()
+def get_pending_students():
+    if not verify_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        SELECT u.id, u.email, u.full_name, s.roll_no, s.branch, s.cgpa
+        FROM user u
+        JOIN student_profile s ON u.id = s.user_id
+        WHERE u.role = 'student' AND u.is_approved = 0
+    """)
+    rows = cur.fetchall()
+    students = [dict(row) for row in rows]
+    return jsonify(students), 200
+
+@admin_bp.route('/students/<int:user_id>/<string:action>', methods=['POST'])
+@jwt_required()
+def handle_student_approval(user_id, action):
+    if not verify_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    if action not in ['approve', 'reject', 'blacklist']:
+        return jsonify({"error": "Invalid action"}), 400
+
+    db = get_db()
+    cur = db.cursor()
+    
+    if action == 'approve':
+        cur.execute("UPDATE user SET is_approved = 1, is_blacklisted = 0 WHERE id = ?", (user_id,))
+    elif action == 'reject':
+        cur.execute("DELETE FROM student_profile WHERE user_id = ?", (user_id,))
+        cur.execute("DELETE FROM user WHERE id = ?", (user_id,))
+    elif action == 'blacklist':
+        cur.execute("UPDATE user SET is_blacklisted = 1, is_approved = 0 WHERE id = ?", (user_id,))
+        
+    db.commit()
+    return jsonify({"message": f"Student action {action} successful"}), 200

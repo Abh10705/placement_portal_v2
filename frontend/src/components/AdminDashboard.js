@@ -37,7 +37,40 @@ const AdminDashboard = {
         </div>
       </div>
 
-      <!-- Pending Company Approvals -->
+      <!-- Pending Student Approvals -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-dark">Pending Student Registrations</div>
+        <div class="card-body">
+          <table class="table table-hover" v-if="pendingStudents.length">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Roll No</th>
+                <th>Branch</th>
+                <th>CGPA</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="stu in pendingStudents" :key="stu.id">
+                <td>{{ stu.full_name }}</td>
+                <td>{{ stu.email }}</td>
+                <td>{{ stu.roll_no }}</td>
+                <td>{{ stu.branch }}</td>
+                <td>{{ stu.cgpa }}</td>
+                <td>
+                  <button @click="approveStudent(stu.id, 'approve')" class="btn btn-sm btn-success me-2">Approve</button>
+                  <button @click="approveStudent(stu.id, 'blacklist')" class="btn btn-sm btn-danger">Blacklist</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-else class="text-muted m-0">No pending student registrations.</p>
+        </div>
+      </div>
+
+      < Pending Company Approvals -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-dark text-white">Pending Company Registrations</div>
         <div class="card-body">
@@ -140,6 +173,7 @@ const AdminDashboard = {
   data() {
     return {
       stats: {},
+      pendingStudents: [],
       pendingCompanies: [],
       pendingDrives: [],
       allUsers: [],
@@ -157,6 +191,7 @@ const AdminDashboard = {
   },
   mounted() {
     this.fetchStats();
+    this.fetchPendingStudents();
     this.fetchPendingCompanies();
     this.fetchPendingDrives();
     this.fetchAllUsers();
@@ -167,6 +202,20 @@ const AdminDashboard = {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.stats = await res.json();
+    },
+    async fetchPendingStudents() {
+      const res = await fetch('http://localhost:5000/api/admin/students/pending', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) this.pendingStudents = await res.json();
+    },
+    async approveStudent(id, action) {
+      await fetch(`http://localhost:5000/api/admin/students/${id}/${action}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      this.fetchPendingStudents();
+      this.fetchStats();
     },
     async fetchPendingCompanies() {
       const res = await fetch('http://localhost:5000/api/admin/companies/pending', {

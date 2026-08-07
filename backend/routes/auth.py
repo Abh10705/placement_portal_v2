@@ -27,8 +27,8 @@ def register_student():
 
     pwd_hash = generate_password_hash(password)
     cur.execute(
-        "INSERT INTO user (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)",
-        (email, pwd_hash, full_name, 'student')
+        "INSERT INTO user (email, password_hash, full_name, role, is_approved) VALUES (?, ?, ?, ?, ?)",
+        (email, pwd_hash, full_name, 'student', 0)
     )
     user_id = cur.lastrowid
 
@@ -63,7 +63,7 @@ def register_company():
 
     pwd_hash = generate_password_hash(password)
     cur.execute(
-        "INSERT INTO user (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)",
+        "INSERT INTO user (email, password_hash, full_name, role, is_approved) VALUES (?, ?, ?, ?, ?)",
         (email, pwd_hash, full_name or company_name, 'company')
     )
     user_id = cur.lastrowid
@@ -88,7 +88,7 @@ def login():
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT id, email, password_hash, role, is_active, is_blacklisted FROM user WHERE email = ?", (email,))
+    cur.execute("SELECT id, email, password_hash, role, is_active, is_blacklisted, is_approved FROM user WHERE email = ?", (email,))
     user = cur.fetchone()
 
     if not user:
@@ -108,6 +108,9 @@ def login():
 
     if not user['is_active']:
         return jsonify({"error": "Account is deactivated."}), 403
+
+    if user['role'] == 'student' and not user['is_approved']:
+        return jsonify({"error": "Account pending admin approval."}), 403
 
     token = create_access_token(
         identity=str(user['id']),

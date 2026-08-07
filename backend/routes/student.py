@@ -12,6 +12,7 @@ ALLOWED_EXTENSIONS = {'pdf'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def verify_student():
     claims = get_jwt()
     return claims.get('role') == 'student'
