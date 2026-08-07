@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
+from flask_caching import Cache
 from models.database import init_db, close_db
 from routes.auth import auth_bp
 from routes.admin import admin_bp
@@ -9,7 +10,6 @@ from routes.student import student_bp
 from flask_cors import CORS
 
 app = Flask(__name__)
-# Allow cross-origin requests from http://localhost:8080 with full headers/methods
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,11 +17,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.config["SECRET_KEY"] = "dev-abhi-placement-key"
 app.config["JWT_SECRET_KEY"] = "dev-abhi-jwt-secret-key"
 app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
-app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB limit
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
+app.config["CACHE_TYPE"] = "RedisCache"
+app.config["CACHE_REDIS_HOST"] = "localhost"
+app.config["CACHE_REDIS_PORT"] = 6379
+app.config["CACHE_REDIS_DB"] = 1
+app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+
+cache = Cache(app)
 jwt = JWTManager(app)
 
-# Register Blueprints
+with app.app_context():
+    init_db()
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(company_bp)

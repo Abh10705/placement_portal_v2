@@ -1,0 +1,21 @@
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:19:33] code 404, message File not found
+127.0.0.1 - - [07/Aug/2026 07:19:33] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [07/Aug/2026 07:39:12] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:39:12] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:39:12] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:39:12] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:39:12] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:39:13] code 404, message File not found
+127.0.0.1 - - [07/Aug/2026 07:39:13] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [07/Aug/2026 07:43:50] code 404, message File not found
+127.0.0.1 - - [07/Aug/2026 07:43:50] "GET /favicon.ico HTTP/1.1" 404 -

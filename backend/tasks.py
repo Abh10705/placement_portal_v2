@@ -1,6 +1,7 @@
 import csv
 import os
 from celery import Celery
+from celery.schedules import crontab
 from app import app
 from models.database import get_db
 
@@ -16,6 +17,16 @@ celery_app.conf.update(
     result_serializer='json',
     timezone='UTC',
     enable_utc=True,
+    beat_schedule={
+        'send-daily-reminders-every-evening': {
+            'task': 'tasks.send_daily_reminders',
+            'schedule': crontab(hour=18, minute=0),
+        },
+        'generate-monthly-report-first-of-month': {
+            'task': 'tasks.generate_monthly_report',
+            'schedule': crontab(day_of_month=1, hour=0, minute=0),
+        },
+    }
 )
 
 @celery_app.task

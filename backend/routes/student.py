@@ -1,9 +1,16 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from models.database import get_db
 
 student_bp = Blueprint('student', __name__, url_prefix='/api/student')
+
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def verify_student():
     claims = get_jwt()
@@ -22,6 +29,12 @@ def get_approved_drives():
     if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
+    from app import cache
+    
+    cached_drives = cache.get("student_drives_list")
+    if cached_drives is not None:
+        return jsonify(cached_drives), 200
+
     db = get_db()
     cur = db.cursor()
     cur.execute(
@@ -34,6 +47,9 @@ def get_approved_drives():
     )
     rows = cur.fetchall()
     drives = [dict(row) for row in rows]
+
+    cache.set("student_drives_list", drives, timeout=60)
+
     return jsonify(drives), 200
 
 @student_bp.route('/drives/<int:drive_id>/apply', methods=['POST'])
@@ -91,32 +107,87 @@ def get_my_applications():
     apps = [dict(row) for row in rows]
     return jsonify(apps), 200
 
-@student_bp.route('/profile', methods=['POST'])
+@student_bp.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    if not verify_student():
+        return jsonify({"error": "Student access required"}), 403
+
+    user_id = int(get_jwt_identity())
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(
+        """
+        SELECT s.*, u.full_name, u.email 
+        FROM student_profile s 
+        JOIN user u ON s.user_id = u.id 
+        WHERE s.user_id = ?
+        """,
+        (user_id,)
+    )
+    row = cur.fetchone()
+    if not row:
+        return jsonify({"error": "Profile not found"}), 404
+    return jsonify(dict(row)), 200
+
+@student_bp.route('/profile', methods=['POST', 'PUT'])
 @jwt_required()
 def update_profile():
     if not verify_student():
         return jsonify({"error": "Student access required"}), 403
 
     user_id = int(get_jwt_identity())
-    data = request.get_json() or {}
-    roll_no = data.get('roll_no')
-    branch = data.get('branch')
-    cgpa = data.get('cgpa')
-    phone = data.get('phone')
-
     db = get_db()
     cur = db.cursor()
-    cur.execute(
-        """
-        UPDATE student_profile 
-        SET roll_no = ?, branch = ?, cgpa = ?, phone = ? 
-        WHERE user_id = ?
-        """,
-        (roll_no, branch, cgpa, phone, user_id)
-    )
+
+    roll_no = request.form.get('roll_no')
+    branch = request.form.get('branch')
+    cgpa = request.form.get('cgpa')
+    phone = request.form.get('phone')
+
+    if not request.form and request.is_json:
+        data = request.get_json() or {}
+        roll_no = data.get('roll_no')
+        branch = data.get('branch')
+        cgpa = data.get('cgpa')
+        phone = data.get('phone')
+
+    resume_path = None
+    if 'resume' in request.files:
+        file = request.files['resume']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(f"student_{user_id}_{file.filename}")
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            resume_path = filename
+
+    if resume_path:
+        cur.execute(
+            """
+            UPDATE student_profile 
+            SET roll_no = ?, branch = ?, cgpa = ?, phone = ?, resume_path = ? 
+            WHERE user_id = ?
+            """,
+            (roll_no, branch, cgpa, phone, resume_path, user_id)
+        )
+    else:
+        cur.execute(
+            """
+            UPDATE student_profile 
+            SET roll_no = ?, branch = ?, cgpa = ?, phone = ? 
+            WHERE user_id = ?
+            """,
+            (roll_no, branch, cgpa, phone, user_id)
+        )
     db.commit()
 
     return jsonify({"message": "Profile updated successfully"}), 200
+
+@student_bp.route('/resume/<filename>', methods=['GET'])
+@jwt_required()
+def download_resume(filename):
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    return send_from_directory(upload_folder, filename)
 
 @student_bp.route('/export-csv', methods=['POST'])
 @jwt_required()

@@ -1,0 +1,52 @@
+ 
+ -------------- celery@mylaptopabhi v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-07 07:19:23
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         placement_tasks:0x78141774f740
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 24 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.export_student_applications_csv
+  . tasks.generate_monthly_report
+  . tasks.send_daily_reminders
+
+[2026-08-07 07:19:23,888: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-08-07 07:19:23,890: INFO/MainProcess] mingle: searching for neighbors
+[2026-08-07 07:19:24,898: INFO/MainProcess] mingle: all alone
+[2026-08-07 07:19:24,934: INFO/MainProcess] celery@mylaptopabhi ready.
+
+Restarting celery worker (/home/abhi/.local/bin/celery -A tasks.celery_app worker --loglevel=info)
+ 
+ -------------- celery@mylaptopabhi v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-07 10:03:25
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         placement_tasks:0x798f3ef57020
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/0
+- *** --- * --- .> concurrency: 24 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . tasks.export_student_applications_csv
+  . tasks.generate_monthly_report
+  . tasks.send_daily_reminders
+
+[2026-08-07 10:03:26,188: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-08-07 10:03:26,192: INFO/MainProcess] mingle: searching for neighbors
+[2026-08-07 10:03:27,198: INFO/MainProcess] mingle: all alone
+[2026-08-07 10:03:27,210: INFO/MainProcess] celery@mylaptopabhi ready.

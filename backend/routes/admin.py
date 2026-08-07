@@ -134,19 +134,6 @@ def get_all_users():
     users = [dict(row) for row in rows]
     return jsonify(users), 200
 
-@admin_bp.route('/users', methods=['GET'])
-@jwt_required()
-def get_all_users():
-    if not verify_admin():
-        return jsonify({"error": "Admin access required"}), 403
-
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT id, email, role, is_blacklisted FROM user WHERE role != 'admin'")
-    rows = cur.fetchall()
-    users = [dict(row) for row in rows]
-    return jsonify(users), 200
-
 @admin_bp.route('/trigger-report', methods=['POST'])
 @jwt_required()
 def trigger_admin_report():

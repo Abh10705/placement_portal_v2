@@ -14,6 +14,55 @@ const StudentDashboard = {
         <button type="button" class="btn-close" @click="exportMessage = ''"></button>
       </div>
 
+      <!-- Student Profile & Resume Section -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white fw-bold">My Profile & Resume</div>
+        <div class="card-body">
+          <div v-if="profileMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ profileMessage }}
+            <button type="button" class="btn-close" @click="profileMessage = ''"></button>
+          </div>
+          <form @submit.prevent="updateProfile">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Roll Number</label>
+                <input type="text" v-model="profile.roll_no" class="form-control" required placeholder="e.g. 24F2005305">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Branch</label>
+                <input type="text" v-model="profile.branch" class="form-control" required placeholder="e.g. Computer Science">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">CGPA</label>
+                <input type="number" step="0.01" v-model="profile.cgpa" class="form-control" required placeholder="e.g. 8.5">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Phone</label>
+                <input type="text" v-model="profile.phone" class="form-control" required placeholder="e.g. 9876543210">
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label class="form-label fw-bold">Upload Resume (PDF only)</label>
+              <input type="file" ref="resumeInput" @change="handleFileUpload" accept="application/pdf" class="form-control">
+              <div v-if="profile.resume_path" class="form-text text-success">
+                Current Resume: 
+                <a :href="'http://localhost:5000/api/student/resume/' + profile.resume_path" target="_blank" class="fw-bold">
+                  View PDF
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <button type="submit" class="btn btn-primary" :disabled="savingProfile">
+                <span v-if="savingProfile" class="spinner-border spinner-border-sm me-1"></span>
+                Save Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- Approved Placement Drives with Search & Filter -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -79,7 +128,17 @@ const StudentDashboard = {
       searchQuery: '',
       eligibilityFilter: '',
       exporting: false,
-      exportMessage: ''
+      exportMessage: '',
+      profile: {
+        roll_no: '',
+        branch: '',
+        cgpa: '',
+        phone: '',
+        resume_path: ''
+      },
+      selectedFile: null,
+      savingProfile: false,
+      profileMessage: ''
     };
   },
   computed: {
@@ -95,10 +154,64 @@ const StudentDashboard = {
     }
   },
   mounted() {
+    this.fetchProfile();
     this.fetchDrives();
     this.fetchApplications();
   },
   methods: {
+    async fetchProfile() {
+      const res = await fetch('http://localhost:5000/api/student/profile', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        this.profile = {
+          roll_no: data.roll_no || '',
+          branch: data.branch || '',
+          cgpa: data.cgpa || '',
+          phone: data.phone || '',
+          resume_path: data.resume_path || ''
+        };
+      }
+    },
+    handleFileUpload(event) {
+      this.selectedFile = event.target.files[0];
+    },
+    async updateProfile() {
+      this.savingProfile = true;
+      this.profileMessage = '';
+
+      const formData = new FormData();
+      formData.append('roll_no', this.profile.roll_no);
+      formData.append('branch', this.profile.branch);
+      formData.append('cgpa', this.profile.cgpa);
+      formData.append('phone', this.profile.phone);
+
+      if (this.selectedFile) {
+        formData.append('resume', this.selectedFile);
+      }
+
+      try {
+        const res = await fetch('http://localhost:5000/api/student/profile', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        });
+
+        if (res.ok) {
+          this.profileMessage = 'Profile updated successfully!';
+          this.fetchProfile();
+        } else {
+          this.profileMessage = 'Failed to update profile.';
+        }
+      } catch (err) {
+        this.profileMessage = 'Error updating profile.';
+      } finally {
+        this.savingProfile = false;
+      }
+    },
     async fetchDrives() {
       const res = await fetch('http://localhost:5000/api/student/drives', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
