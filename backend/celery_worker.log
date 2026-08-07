@@ -1,10 +1,10 @@
  
  -------------- celery@mylaptopabhi v5.6.3 (recovery)
 --- ***** ----- 
--- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-07 13:04:21
+-- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-08 00:20:52
 - *** --- * --- 
 - ** ---------- [config]
-- ** ---------- .> app:         placement_tasks:0x725eb16e1e20
+- ** ---------- .> app:         placement_tasks:0x70c6aa557560
 - ** ---------- .> transport:   redis://localhost:6379/0
 - ** ---------- .> results:     redis://localhost:6379/0
 - *** --- * --- .> concurrency: 24 (prefork)
@@ -19,19 +19,7 @@
   . tasks.generate_monthly_report
   . tasks.send_daily_reminders
 
-[2026-08-07 13:04:22,110: INFO/MainProcess] Connected to redis://localhost:6379/0
-[2026-08-07 13:04:22,115: INFO/MainProcess] mingle: searching for neighbors
-[2026-08-07 13:04:23,122: INFO/MainProcess] mingle: all alone
-[2026-08-07 13:04:23,136: INFO/MainProcess] celery@mylaptopabhi ready.
-[2026-08-07 13:06:02,939: INFO/MainProcess] Task tasks.export_student_applications_csv[003b0e07-57f7-4317-bb43-e3806c743500] received
-[2026-08-07 13:06:02,945: INFO/ForkPoolWorker-15] Task tasks.export_student_applications_csv[003b0e07-57f7-4317-bb43-e3806c743500] succeeded in 0.005561722999118501s: 'Export completed: /home/abhi/placement_portal/backend/exports/applications_student_2.csv'
-[2026-08-07 13:07:43,797: INFO/MainProcess] Task tasks.export_student_applications_csv[d2257451-b169-43b4-91cd-388a5c7741a1] received
-[2026-08-07 13:07:43,799: INFO/ForkPoolWorker-15] Task tasks.export_student_applications_csv[d2257451-b169-43b4-91cd-388a5c7741a1] succeeded in 0.0013911890018789563s: 'Export completed: /home/abhi/placement_portal/backend/exports/applications_student_2.csv'
-
-worker: Warm shutdown (MainProcess)
-
-worker: Hitting Ctrl+C again will initiate cold shutdown, terminating all running tasks!
-
-worker: Warm shutdown (MainProcess)
-
-worker: Warm shutdown (MainProcess)
+[2026-08-08 00:20:53,500: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-08-08 00:20:53,502: INFO/MainProcess] mingle: searching for neighbors
+[2026-08-08 00:20:54,509: INFO/MainProcess] mingle: all alone
+[2026-08-08 00:20:54,530: INFO/MainProcess] celery@mylaptopabhi ready.

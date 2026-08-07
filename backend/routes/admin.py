@@ -90,10 +90,16 @@ def get_pending_drives():
 def handle_drive_approval(drive_id, action):
     from app import cache
     try:
+        try:
+            cache.delete("student_drives_list")
+        except Exception:
+            pass
+    except Exception:
+        pass
+    try:
         cache.delete("student_drives_list")
     except Exception:
         pass
-    cache.delete("student_drives_list")
     if not verify_admin():
         return jsonify({"error": "Admin access required"}), 403
 

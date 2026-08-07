@@ -51,7 +51,10 @@ def get_approved_drives():
     rows = cur.fetchall()
     drives = [dict(row) for row in rows]
 
-    cache.set("student_drives_list", drives, timeout=60)
+    try:
+        cache.set("student_drives_list", drives, timeout=60)
+    except Exception:
+        pass
 
     return jsonify(drives), 200
 
