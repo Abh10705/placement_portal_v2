@@ -1,10 +1,10 @@
  
  -------------- celery@mylaptopabhi v5.6.3 (recovery)
 --- ***** ----- 
--- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-08 00:20:52
+-- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-08 03:01:22
 - *** --- * --- 
 - ** ---------- [config]
-- ** ---------- .> app:         placement_tasks:0x70c6aa557560
+- ** ---------- .> app:         placement_tasks:0x7cc5e435f8c0
 - ** ---------- .> transport:   redis://localhost:6379/0
 - ** ---------- .> results:     redis://localhost:6379/0
 - *** --- * --- .> concurrency: 24 (prefork)
@@ -19,7 +19,9 @@
   . tasks.generate_monthly_report
   . tasks.send_daily_reminders
 
-[2026-08-08 00:20:53,500: INFO/MainProcess] Connected to redis://localhost:6379/0
-[2026-08-08 00:20:53,502: INFO/MainProcess] mingle: searching for neighbors
-[2026-08-08 00:20:54,509: INFO/MainProcess] mingle: all alone
-[2026-08-08 00:20:54,530: INFO/MainProcess] celery@mylaptopabhi ready.
+[2026-08-08 03:01:23,194: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-08-08 03:01:23,196: INFO/MainProcess] mingle: searching for neighbors
+[2026-08-08 03:01:24,203: INFO/MainProcess] mingle: all alone
+[2026-08-08 03:01:24,220: INFO/MainProcess] celery@mylaptopabhi ready.
+[2026-08-08 03:04:19,685: INFO/MainProcess] Task tasks.export_student_applications_csv[ebe50e21-00eb-4356-9ab8-82d30a401124] received
+[2026-08-08 03:04:19,691: INFO/ForkPoolWorker-15] Task tasks.export_student_applications_csv[ebe50e21-00eb-4356-9ab8-82d30a401124] succeeded in 0.005715269000575063s: 'Export completed: /home/abhi/placement_portal/backend/exports/applications_student_2.csv'

@@ -9,6 +9,9 @@ from routes.company import company_bp
 from routes.student import student_bp
 from flask_cors import CORS
 
+from flask_mail import Mail, Message
+
+
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -24,6 +27,16 @@ app.config["CACHE_REDIS_HOST"] = "localhost"
 app.config["CACHE_REDIS_PORT"] = 6379
 app.config["CACHE_REDIS_DB"] = 1
 app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+
+# Mail Configuration (Local SMTP Debugging)
+app.config['MAIL_SERVER'] = 'localhost'
+app.config['MAIL_PORT'] = 1025
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEFAULT_SENDER'] = 'noreply@placementportal.edu'
+
+mail = Mail(app)
+
 
 cache = Cache(app)
 jwt = JWTManager(app)
