@@ -8,6 +8,7 @@ python-dotenv
 flask-jwt-extended
 flask-sqlalchemy
 flask-cors
+flask-caching
 celery
 redis
 
