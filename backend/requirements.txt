@@ -9,6 +9,7 @@ flask-jwt-extended
 flask-sqlalchemy
 flask-cors
 flask-caching
+flask-mail
 celery
 redis
 
