@@ -108,22 +108,35 @@ const AdminDashboard = {
               <tr>
                 <th>Company</th>
                 <th>Job Title</th>
-                <th>Eligibility</th>
+                <th>Vacancy</th>
                 <th>Deadline</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="drive in pendingDrives" :key="drive.id">
-                <td>{{ drive.company_name }}</td>
-                <td>{{ drive.job_title }}</td>
-                <td>{{ drive.eligibility }}</td>
-                <td>{{ drive.application_deadline }}</td>
-                <td>
-                  <button @click="approveDrive(drive.id, 'approve')" class="btn btn-sm btn-success me-2">Approve</button>
-                  <button @click="approveDrive(drive.id, 'reject')" class="btn btn-sm btn-danger">Reject</button>
-                </td>
-              </tr>
+              <template v-for="drive in pendingDrives" :key="drive.id">
+                <tr>
+                  <td>{{ drive.company_name }}</td>
+                  <td>{{ drive.job_title }}</td>
+                  <td>{{ drive.vacancy || drive.eligibility }}</td>
+                  <td>{{ drive.application_deadline }}</td>
+                  <td>
+                    <button @click="toggleDriveDetails(drive)" class="btn btn-sm btn-info text-white me-2">
+                      {{ drive.showDetails ? "Hide" : "View" }}
+                    </button>
+                    <button @click="approveDrive(drive.id, 'approve')" class="btn btn-sm btn-success me-2">Approve</button>
+                    <button @click="approveDrive(drive.id, 'reject')" class="btn btn-sm btn-danger">Reject</button>
+                  </td>
+                </tr>
+                <tr v-if="drive.showDetails" class="bg-light">
+                  <td colspan="5" class="p-3">
+                    <strong>Job Description:</strong>
+                    <p class="mb-1">{{ drive.job_description || 'No description provided.' }}</p>
+                    <strong>Eligibility Criteria:</strong>
+                    <p class="mb-0">{{ drive.eligibility }}</p>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
           <p v-else class="text-muted m-0">No pending placement drives.</p>
@@ -197,6 +210,9 @@ const AdminDashboard = {
     this.fetchAllUsers();
   },
   methods: {
+    toggleDriveDetails(drive) {
+      drive.showDetails = !drive.showDetails; this.$forceUpdate();
+    },
     async fetchStats() {
       const res = await fetch('http://localhost:5000/api/admin/stats', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -235,7 +251,10 @@ const AdminDashboard = {
       const res = await fetch('http://localhost:5000/api/admin/drives/pending', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      if (res.ok) this.pendingDrives = await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        this.pendingDrives = data.map(d => ({ ...d, showDetails: false }));
+      }
     },
     async approveDrive(id, action) {
       await fetch(`http://localhost:5000/api/admin/drives/${id}/${action}`, {

@@ -76,7 +76,7 @@ def get_pending_drives():
     db = get_db()
     cur = db.cursor()
     cur.execute("""
-        SELECT j.id, j.job_title, j.job_description, j.eligibility, j.application_deadline, c.company_name 
+        SELECT j.id, j.job_title, j.job_description, j.eligibility, j.eligibility AS vacancy, j.application_deadline, c.company_name 
         FROM job_posting j 
         JOIN company_profile c ON j.company_id = c.id 
         WHERE j.status = 'pending'

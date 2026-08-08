@@ -14,8 +14,8 @@ const CompanyDashboard = {
                 <input type="text" v-model="newDrive.job_title" class="form-control" required placeholder="e.g. Software Engineer">
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Eligibility Criteria</label>
-                <input type="text" v-model="newDrive.eligibility" class="form-control" required placeholder="e.g. CGPA > 8.0, CS/IT">
+                <label class="form-label">Number of Vacancies</label>
+                <input type="text" v-model="newDrive.eligibility" class="form-control" required placeholder="e.g. 5 or 10">
               </div>
             </div>
             <div class="mb-3">
