@@ -43,3 +43,30 @@
 127.0.0.1 - - [08/Aug/2026 06:17:03] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
 127.0.0.1 - - [08/Aug/2026 06:17:04] code 404, message File not found
 127.0.0.1 - - [08/Aug/2026 06:17:04] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:28:13] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:28:13] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:28:14] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:28:14] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:29:34] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:29:34] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /src/components/Login.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /src/components/StudentDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /src/components/CompanyDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /src/components/AdminDashboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+127.0.0.1 - - [08/Aug/2026 06:30:34] code 404, message File not found
+127.0.0.1 - - [08/Aug/2026 06:30:34] "GET /favicon.ico HTTP/1.1" 404 -

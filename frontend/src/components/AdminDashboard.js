@@ -118,7 +118,7 @@ const AdminDashboard = {
                 <tr>
                   <td>{{ drive.company_name }}</td>
                   <td>{{ drive.job_title }}</td>
-                  <td>{{ drive.vacancy || drive.eligibility }}</td>
+                  <td>{{ drive.vacancy || drive.vacancy }}</td>
                   <td>{{ drive.application_deadline }}</td>
                   <td>
                     <button @click="toggleDriveDetails(drive)" class="btn btn-sm btn-info text-white me-2">
@@ -132,8 +132,8 @@ const AdminDashboard = {
                   <td colspan="5" class="p-3">
                     <strong>Job Description:</strong>
                     <p class="mb-1">{{ drive.job_description || 'No description provided.' }}</p>
-                    <strong>Eligibility Criteria:</strong>
-                    <p class="mb-0">{{ drive.eligibility }}</p>
+                    <strong>Vacancy:</strong>
+                    <p class="mb-0">{{ drive.vacancy }}</p>
                   </td>
                 </tr>
               </template>
