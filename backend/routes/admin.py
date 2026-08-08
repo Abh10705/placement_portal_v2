@@ -122,16 +122,29 @@ def toggle_blacklist(user_id):
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT is_blacklisted FROM user WHERE id = ?", (user_id,))
+    cur.execute("SELECT id, is_blacklisted, role FROM user WHERE id = ?", (user_id,))
     row = cur.fetchone()
     if not row:
         return jsonify({"error": "User not found"}), 404
 
-    new_status = 0 if row['is_blacklisted'] else 1
-    cur.execute("UPDATE user SET is_blacklisted = ? WHERE id = ?", (new_status, user_id))
-    db.commit()
+    is_blacklisted = row['is_blacklisted'] if isinstance(row, dict) else row[1]
+    user_role = row['role'] if isinstance(row, dict) else row[2]
+    new_status = 0 if is_blacklisted else 1
 
-    return jsonify({"message": "User status updated", "is_blacklisted": new_status}), 200
+    cur.execute("UPDATE user SET is_blacklisted = ? WHERE id = ?", (new_status, user_id))
+
+    if user_role == 'company':
+        cur.execute("SELECT id FROM company_profile WHERE user_id = ?", (user_id,))
+        comp = cur.fetchone()
+        if comp:
+            comp_id = comp['id'] if isinstance(comp, dict) else comp[0]
+            if new_status == 1:
+                cur.execute("UPDATE job_posting SET status = 'blacklisted' WHERE company_id = ?", (comp_id,))
+            else:
+                cur.execute("UPDATE job_posting SET status = 'approved' WHERE company_id = ?", (comp_id,))
+
+    db.commit()
+    return jsonify({"message": "User status updated successfully", "is_blacklisted": new_status}), 200
 
 @admin_bp.route('/users', methods=['GET'])
 @jwt_required()
