@@ -61,7 +61,7 @@ const AdminDashboard = {
                 <td>{{ stu.cgpa }}</td>
                 <td>
                   <button @click="approveStudent(stu.id, 'approve')" class="btn btn-sm btn-success me-2">Approve</button>
-                  <button @click="approveStudent(stu.id, 'blacklist')" class="btn btn-sm btn-danger">Blacklist</button>
+                  <button @click="approveStudent(stu.id, 'reject')" class="btn btn-sm btn-danger">Reject</button>
                 </td>
               </tr>
             </tbody>
