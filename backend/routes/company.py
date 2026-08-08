@@ -71,7 +71,19 @@ def get_my_drives():
         (comp['id'],)
     )
     rows = cur.fetchall()
-    drives = [dict(row) for row in rows]
+    drives = []
+    for row in rows:
+        d = dict(row)
+        cur.execute("""
+            SELECT a.id as application_id, a.status, a.applied_at,
+                   u.email, sp.roll_no, sp.branch, sp.resume_path
+            FROM application a
+            JOIN student_profile sp ON a.student_id = sp.id
+            JOIN user u ON sp.user_id = u.id
+            WHERE a.drive_id = ?
+        """, (d["id"],))
+        d["applicants"] = [dict(app) for app in cur.fetchall()]
+        drives.append(d)
     return jsonify(drives), 200
 
 @company_bp.route('/drives/<int:drive_id>/applications', methods=['GET'])
