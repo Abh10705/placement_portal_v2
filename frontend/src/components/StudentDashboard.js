@@ -91,6 +91,7 @@ const StudentDashboard = {
                 <td>{{ drive.eligibility }}</td>
                 <td>{{ drive.application_deadline }}</td>
                 <td>
+                  <button @click="selectedDrive = drive" class="btn btn-sm btn-info me-1">View Details</button>
                   <button @click="applyToDrive(drive.id)" class="btn btn-sm btn-outline-primary" :disabled="hasApplied(drive.id)">
                     {{ hasApplied(drive.id) ? 'Applied' : 'Apply Now' }}
                   </button>
@@ -132,10 +133,40 @@ const StudentDashboard = {
           </table>
         </div>
       </div>
+    
+      <!-- View Drive Details Modal -->
+      <div v-if="selectedDrive" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{ selectedDrive.company_name || 'Placement Drive Details' }}</h5>
+              <button type="button" class="btn-close" @click="selectedDrive = null"></button>
+            </div>
+            <div class="modal-body">
+              <h6 class="text-primary fw-bold">{{ selectedDrive.job_title }}</h6>
+              <hr>
+              <p><strong>Eligibility:</strong> {{ selectedDrive.eligibility || 'N/A' }}</p>
+              <p><strong>Deadline:</strong> {{ selectedDrive.application_deadline }}</p>
+              <p><strong>Job Description:</strong></p>
+              <div class="p-2 bg-light border rounded mb-3" style="white-space: pre-line; max-height: 200px; overflow-y: auto;">
+                {{ selectedDrive.job_description || 'No description provided.' }}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="selectedDrive = null">Close</button>
+              <button type="button" class="btn btn-primary" @click="applyForDrive(selectedDrive.id); selectedDrive = null;" :disabled="hasApplied(selectedDrive.id)">
+                {{ hasApplied(selectedDrive.id) ? 'Applied' : 'Apply Now' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   `,
   data() {
     return {
+      selectedDrive: null,
       profile: {
         roll_no: '',
         branch: '',
@@ -174,7 +205,8 @@ const StudentDashboard = {
   methods: {
     getAuthHeaders() {
       const token = localStorage.getItem('token');
-      return { 'Authorization': `Bearer ${token}` };
+      return {
+      selectedDrive: null, 'Authorization': `Bearer ${token}` };
     },
     async fetchProfile() {
       try {
