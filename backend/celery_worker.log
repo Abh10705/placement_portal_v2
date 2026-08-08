@@ -23,3 +23,7 @@
 [2026-08-08 12:44:29,821: INFO/MainProcess] mingle: searching for neighbors
 [2026-08-08 12:44:30,829: INFO/MainProcess] mingle: all alone
 [2026-08-08 12:44:30,856: INFO/MainProcess] celery@mylaptopabhi ready.
+[2026-08-08 13:19:50,110: INFO/MainProcess] Task tasks.export_student_applications_csv[eb70e5d4-3e07-43ed-9bfc-ec07e13fec2e] received
+[2026-08-08 13:19:50,117: INFO/ForkPoolWorker-15] Task tasks.export_student_applications_csv[eb70e5d4-3e07-43ed-9bfc-ec07e13fec2e] succeeded in 0.005571895002503879s: 'Export completed: /home/abhi/placement_portal/backend/exports/applications_student_6.csv'
+[2026-08-08 13:20:31,027: INFO/MainProcess] Task tasks.generate_monthly_report[6a7d0399-1876-4cf3-8239-e0f124f8f85b] received
+[2026-08-08 13:20:31,033: INFO/ForkPoolWorker-15] Task tasks.generate_monthly_report[6a7d0399-1876-4cf3-8239-e0f124f8f85b] succeeded in 0.004677138997067232s: 'Monthly report sent to admin@portal.test'
