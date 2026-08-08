@@ -51,7 +51,8 @@ const CompanyDashboard = {
                 <table class="table table-sm table-hover" v-if="drive.applicants && drive.applicants.length">
                   <thead>
                     <tr>
-                      <th>Student ID</th>
+                      <th>Candidate</th>
+                    <th>Profile / Resume</th>
                       <th>Applied At</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -59,15 +60,20 @@ const CompanyDashboard = {
                   </thead>
                   <tbody>
                     <tr v-for="app in drive.applicants" :key="app.id">
-                      <td>{{ app.student_id }}</td>
+                      <td>{{ app.student_email || app.email || app.student_id }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-info text-white" @click="downloadResume(app.resume_path || app.resume)">
+                        📄 View Resume
+                      </button>
+                    </td>
                       <td>{{ app.applied_at }}</td>
                       <td>
                         <span class="badge" :class="statusBadgeClass(app.status)">{{ app.status }}</span>
                       </td>
                       <td>
-                        <button @click="updateStatus(app.id, 'Shortlisted')" class="btn btn-xs btn-outline-info me-1">Shortlist</button>
-                        <button @click="updateStatus(app.id, 'Selected')" class="btn btn-xs btn-outline-success me-1">Select</button>
-                        <button @click="updateStatus(app.id, 'Rejected')" class="btn btn-xs btn-outline-danger">Reject</button>
+                        <button @click="updateStatus(app, \'shortlisted\')" class="btn btn-xs btn-outline-info me-1">Shortlist</button>
+                        <button @click="updateStatus(app.application_id || app.id, status_val)" class="btn btn-xs btn-outline-success me-1">Select</button>
+                        <button @click="updateStatus(app.application_id || app.id, status_val)" class="btn btn-xs btn-outline-danger">Reject</button>
                       </td>
                     </tr>
                   </tbody>
@@ -97,6 +103,55 @@ const CompanyDashboard = {
     this.fetchDrives();
   },
   methods: {
+    downloadResume(filename) {
+      if (!filename) {
+        alert("No resume file uploaded for this student.");
+        return;
+      }
+      const token = localStorage.getItem('token');
+      fetch(`http://localhost:5000/api/student/resume/${filename}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Download failed');
+        return res.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      })
+      .catch(err => console.error('Error downloading resume:', err));
+    },
+        async updateStatus(app, newStatus) {
+      const appId = typeof app === 'object' ? (app.application_id || app.id) : app;
+      console.log('Updating status for Application ID:', appId, 'to:', newStatus);
+      if (!appId) {
+        alert('Error: Could not find Application ID on candidate object.');
+        return;
+      }
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`http://localhost:5000/api/company/applications/${appId}/status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus.toLowerCase() })
+        });
+        const data = await res.json();
+        console.log('Backend response:', data);
+        if (res.ok) {
+          if (typeof this.fetchDrives === 'function') await this.fetchDrives();
+          else if (typeof this.loadDrives === 'function') await this.loadDrives();
+          else location.reload();
+        } else {
+          alert(`Status update failed: ${data.error || 'Unknown error'}`);
+        }
+      } catch (err) {
+        console.error('Error updating status:', err);
+      }
+    },
     async fetchDrives() {
       const res = await fetch('http://localhost:5000/api/company/drives', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -119,16 +174,35 @@ const CompanyDashboard = {
       }
       this.submitting = false;
     },
-    async updateStatus(applicationId, newStatus) {
-      await fetch(`http://localhost:5000/api/company/applications/${applicationId}/status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      this.fetchDrives();
+        async updateStatus(app, newStatus) {
+      const appId = typeof app === 'object' ? (app.application_id || app.id) : app;
+      console.log('Updating status for Application ID:', appId, 'to:', newStatus);
+      if (!appId) {
+        alert('Error: Could not find Application ID on candidate object.');
+        return;
+      }
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`http://localhost:5000/api/company/applications/${appId}/status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus.toLowerCase() })
+        });
+        const data = await res.json();
+        console.log('Backend response:', data);
+        if (res.ok) {
+          if (typeof this.fetchDrives === 'function') await this.fetchDrives();
+          else if (typeof this.loadDrives === 'function') await this.loadDrives();
+          else location.reload();
+        } else {
+          alert(`Status update failed: ${data.error || 'Unknown error'}`);
+        }
+      } catch (err) {
+        console.error('Error updating status:', err);
+      }
     },
     statusBadgeClass(status) {
       switch (status ? status.toLowerCase() : '') {
