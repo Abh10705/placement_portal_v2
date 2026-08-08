@@ -39,6 +39,11 @@ def export_student_applications_csv(student_id):
     with app.app_context():
         db = get_db()
         cur = db.cursor()
+
+        cur.execute("SELECT email FROM user WHERE id = ?", (student_id,))
+        student = cur.fetchone()
+        student_email = student['email'] if student and student['email'] else 'yipsilon0705@gmail.com'
+
         cur.execute(
             """
             SELECT a.id as application_id, a.applied_at, a.status,
@@ -54,17 +59,32 @@ def export_student_applications_csv(student_id):
 
         with open(file_path, mode='w', newline='', encoding='utf-8') as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow(['Application ID', 'Job Title', 'Company', 'Applied At', 'Status'])
+            writer.writerow(['Student ID', 'Application ID', 'Company Name', 'Drive Title', 'Application Status', 'Applied Date'])
             for row in rows:
                 writer.writerow([
+                    student_id,
                     row['application_id'],
-                    row['job_title'],
                     row['company_name'],
-                    row['applied_at'],
-                    row['status']
+                    row['job_title'],
+                    row['status'],
+                    row['applied_at']
                 ])
 
-    return f"Export completed: {file_path}"
+        msg = Message(
+            subject="Your Placement Applications CSV Export is Ready",
+            recipients=[student_email, "yipsilon0705@gmail.com"],
+            body="Hello,\n\nYour requested placement applications export has been generated successfully.\n\nPlease find the CSV file attached.\n\nBest regards,\nPlacement Portal Team"
+        )
+        
+        try:
+            with open(file_path, 'rb') as fp:
+                msg.attach(f"applications_student_{student_id}.csv", "text/csv", fp.read())
+            mail.send(msg)
+            alert_status = f"Alert email sent to {student_email}"
+        except Exception as e:
+            alert_status = f"Failed to send email alert: {e}"
+
+    return f"Export completed: {file_path}. {alert_status}"
 
 @celery_app.task
 def send_daily_reminders():
@@ -72,7 +92,6 @@ def send_daily_reminders():
         db = get_db()
         cur = db.cursor()
         
-        # Get active placement drives
         cur.execute("""
             SELECT j.id, j.job_title, c.company_name, j.application_deadline 
             FROM job_posting j
@@ -84,7 +103,6 @@ def send_daily_reminders():
         if not drives:
             return "No active drives for reminders"
 
-        # Get all registered students
         cur.execute("SELECT email, full_name FROM user WHERE role = 'student'")
         students = cur.fetchall()
 
@@ -186,3 +204,4 @@ def generate_monthly_report():
             return f"Monthly report sent to {', '.join(admin_emails)}"
         except Exception as e:
             return f"Failed to send monthly report: {e}"
+            
