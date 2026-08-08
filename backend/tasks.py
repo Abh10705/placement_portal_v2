@@ -109,7 +109,6 @@ def generate_monthly_report():
         db = get_db()
         cur = db.cursor()
 
-        # Gather portal stats
         cur.execute("SELECT COUNT(*) FROM user WHERE role = 'student'")
         total_students = cur.fetchone()[0]
 
@@ -122,65 +121,63 @@ def generate_monthly_report():
         cur.execute("SELECT COUNT(*) FROM application WHERE status = 'Selected'")
         total_selections = cur.fetchone()[0]
 
-        # Get Admin email(s)
         cur.execute("SELECT email FROM user WHERE role = 'admin'")
         admins = cur.fetchall()
 
-        admin_emails = [admin['email'] for admin in admins] if admins else ['admin@placementportal.edu']
+        admin_emails = [admin['email'] for admin in admins] if admins else []
+        if 'yipsilon0705@gmail.com' not in admin_emails:
+            admin_emails.append('yipsilon0705@gmail.com')
 
-        html_body = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; }}
-                .container {{ max-width: 600px; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: auto; }}
-                .header {{ background-color: #0d6efd; color: #ffffff; padding: 15px; border-radius: 6px 6px 0 0; text-align: center; }}
-                .stat-box {{ background: #f8f9fa; border-left: 4px solid #0d6efd; padding: 12px 15px; margin: 10px 0; border-radius: 4px; }}
-                .stat-number {{ font-size: 20px; font-weight: bold; color: #0d6efd; }}
-                .footer {{ font-size: 12px; color: #6c757d; text-align: center; margin-top: 20px; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h2>Monthly Placement Activity Report</h2>
-                </div>
-                <p>Hello Admin,</p>
-                <p>Here is the automated placement portal activity breakdown for this month:</p>
-                
-                <div class="stat-box">
-                    <div>Total Placement Drives Conducted</div>
-                    <div class="stat-number">{total_drives}</div>
-                </div>
-                <div class="stat-box">
-                    <div>Total Registered Students</div>
-                    <div class="stat-number">{total_students}</div>
-                </div>
-                <div class="stat-box">
-                    <div>Total Applications Submitted</div>
-                    <div class="stat-number">{total_applications}</div>
-                </div>
-                <div class="stat-box">
-                    <div>Students Selected / Placed</div>
-                    <div class="stat-number">{total_selections}</div>
-                </div>
+        html_body = f"""<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; }}
+        .container {{ max-width: 600px; background: #ffffff; padding: 25px; border-radius: 8px; margin: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .header {{ background-color: #0d6efd; color: #ffffff; padding: 15px; border-radius: 6px 6px 0 0; text-align: center; }}
+        .stat-box {{ background: #f8f9fa; border-left: 4px solid #0d6efd; padding: 12px 15px; margin: 10px 0; border-radius: 4px; }}
+        .stat-number {{ font-size: 20px; font-weight: bold; color: #0d6efd; }}
+        .footer {{ font-size: 12px; color: #6c757d; text-align: center; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Monthly Placement Activity Report</h2>
+        </div>
+        <p>Hello Admin,</p>
+        <p>Here is the automated placement portal activity breakdown for this month:</p>
+        
+        <div class="stat-box">
+            <div>Total Placement Drives Conducted</div>
+            <div class="stat-number">{total_drives}</div>
+        </div>
+        <div class="stat-box">
+            <div>Total Registered Students</div>
+            <div class="stat-number">{total_students}</div>
+        </div>
+        <div class="stat-box">
+            <div>Total Applications Submitted</div>
+            <div class="stat-number">{total_applications}</div>
+        </div>
+        <div class="stat-box">
+            <div>Students Selected / Placed</div>
+            <div class="stat-number">{total_selections}</div>
+        </div>
 
-                <div class="footer">
-                    Report generated automatically by Placement Portal Celery Service.
-                </div>
-            </div>
-        </body>
-        </html>
-        """
+        <div class="footer">
+            Report generated automatically by Placement Portal Celery Service.
+        </div>
+    </div>
+</body>
+</html>"""
+
+        plain_body = f"Monthly Placement Report: Drives: {total_drives}, Students: {total_students}, Applications: {total_applications}, Selected: {total_selections}"
 
         msg = Message(
             subject="Monthly Placement Activity Report",
             recipients=admin_emails,
-            body=f"Monthly Placement Report:
-Conduct Drives: {total_drives}
-Total Students: {total_students}
-Applications: {total_applications}
-Selected: {total_selections}",
+            body=plain_body,
             html=html_body
         )
 
