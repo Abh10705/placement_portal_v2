@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+import os
 from flask import Flask, jsonify, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_caching import Cache
@@ -29,13 +32,8 @@ app.config["CACHE_REDIS_DB"] = 1
 app.config["CACHE_DEFAULT_TIMEOUT"] = 300
 
 # Mail Configuration (Local SMTP Debugging)
-app.config['MAIL_SERVER'] = 'localhost'
-app.config['MAIL_PORT'] = 1025
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_DEFAULT_SENDER'] = 'noreply@placementportal.edu'
 
-mail = Mail(app)
+# mail moved below config
 
 
 cache = Cache(app)
@@ -64,3 +62,25 @@ def serve_frontend(path):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = '24f2005305@ds.study.iitm.ac.in'
+app.config['MAIL_DEFAULT_SENDER'] = '24f2005305@ds.study.iitm.ac.in'
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+
+from flask_mail import Mail
+mail = Mail(app)
+
+
+''' python3 -c "
+import sys; sys.path.append('backend')
+from app import app
+from tasks import send_daily_reminders
+
+with app.app_context():
+    print(send_daily_reminders())
+" '''

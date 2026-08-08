@@ -1,10 +1,10 @@
  
  -------------- celery@mylaptopabhi v5.6.3 (recovery)
 --- ***** ----- 
--- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-08 12:44:29
+-- ******* ---- Linux-6.14.0-33-generic-x86_64-with-glibc2.39 2026-08-09 00:26:41
 - *** --- * --- 
 - ** ---------- [config]
-- ** ---------- .> app:         placement_tasks:0x79d53c65b4a0
+- ** ---------- .> app:         placement_tasks:0x7d7abc303b00
 - ** ---------- .> transport:   redis://localhost:6379/0
 - ** ---------- .> results:     redis://localhost:6379/0
 - *** --- * --- .> concurrency: 24 (prefork)
@@ -19,11 +19,9 @@
   . tasks.generate_monthly_report
   . tasks.send_daily_reminders
 
-[2026-08-08 12:44:29,818: INFO/MainProcess] Connected to redis://localhost:6379/0
-[2026-08-08 12:44:29,821: INFO/MainProcess] mingle: searching for neighbors
-[2026-08-08 12:44:30,829: INFO/MainProcess] mingle: all alone
-[2026-08-08 12:44:30,856: INFO/MainProcess] celery@mylaptopabhi ready.
-[2026-08-08 13:19:50,110: INFO/MainProcess] Task tasks.export_student_applications_csv[eb70e5d4-3e07-43ed-9bfc-ec07e13fec2e] received
-[2026-08-08 13:19:50,117: INFO/ForkPoolWorker-15] Task tasks.export_student_applications_csv[eb70e5d4-3e07-43ed-9bfc-ec07e13fec2e] succeeded in 0.005571895002503879s: 'Export completed: /home/abhi/placement_portal/backend/exports/applications_student_6.csv'
-[2026-08-08 13:20:31,027: INFO/MainProcess] Task tasks.generate_monthly_report[6a7d0399-1876-4cf3-8239-e0f124f8f85b] received
-[2026-08-08 13:20:31,033: INFO/ForkPoolWorker-15] Task tasks.generate_monthly_report[6a7d0399-1876-4cf3-8239-e0f124f8f85b] succeeded in 0.004677138997067232s: 'Monthly report sent to admin@portal.test'
+[2026-08-09 00:26:41,723: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2026-08-09 00:26:41,724: INFO/MainProcess] mingle: searching for neighbors
+[2026-08-09 00:26:42,729: INFO/MainProcess] mingle: all alone
+[2026-08-09 00:26:42,745: INFO/MainProcess] celery@mylaptopabhi ready.
+[2026-08-09 00:26:42,746: INFO/MainProcess] Task tasks.send_daily_reminders[b0833c68-b358-4796-abe8-caf4613b763e] received
+[2026-08-09 00:27:22,951: INFO/ForkPoolWorker-16] Task tasks.send_daily_reminders[b0833c68-b358-4796-abe8-caf4613b763e] succeeded in 40.20430108900018s: 'Daily reminders sent to 9 students'
