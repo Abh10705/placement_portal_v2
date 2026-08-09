@@ -44,7 +44,7 @@ const CompanyDashboard = {
                     {{ drive.status }}
                   </span>
                 </div>
-                <p class="card-text mb-1"><strong>Eligibility:</strong> {{ drive.eligibility }}</p>
+                <p class="card-text mb-1"><strong>Vacancy:</strong> {{ drive.eligibility }}</p>
                 <p class="card-text mb-3"><strong>Deadline:</strong> {{ drive.application_deadline }}</p>
 
                 <h6>Applicants ({{ drive.applicants ? drive.applicants.length : 0 }})</h6>

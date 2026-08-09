@@ -67,7 +67,7 @@ const StudentDashboard = {
           <span>Available Placement Drives</span>
           <div class="d-flex gap-2">
             <input type="text" v-model="searchQuery" class="form-control form-control-sm" placeholder="Search title or company...">
-            <input type="text" v-model="eligibilityFilter" class="form-control form-control-sm" placeholder="Filter eligibility...">
+            <input type="text" v-model="eligibilityFilter" class="form-control form-control-sm" placeholder="Filter vacancy...">
           </div>
         </div>
         <div class="card-body p-0">
@@ -79,7 +79,7 @@ const StudentDashboard = {
               <tr>
                 <th>Company</th>
                 <th>Role Title</th>
-                <th>Eligibility</th>
+                <th>Vacancy</th>
                 <th>Deadline</th>
                 <th>Action</th>
               </tr>
@@ -145,7 +145,7 @@ const StudentDashboard = {
             <div class="modal-body">
               <h6 class="text-primary fw-bold">{{ selectedDrive.job_title }}</h6>
               <hr>
-              <p><strong>Eligibility:</strong> {{ selectedDrive.eligibility || 'N/A' }}</p>
+              <p><strong>Vacancy:</strong> {{ selectedDrive.eligibility || 'N/A' }}</p>
               <p><strong>Deadline:</strong> {{ selectedDrive.application_deadline }}</p>
               <p><strong>Job Description:</strong></p>
               <div class="p-2 bg-light border rounded mb-3" style="white-space: pre-line; max-height: 200px; overflow-y: auto;">
