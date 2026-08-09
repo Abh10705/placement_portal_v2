@@ -75,6 +75,13 @@ def init_db():
     db = sqlite3.connect(DB_PATH)
     db.executescript(SCHEMA_SQL)
 
+    # Safely add the missing column if it doesn't exist yet
+    try:
+        db.execute("ALTER TABLE user ADD COLUMN is_approved BOOLEAN DEFAULT 1;")
+        db.commit()
+    except Exception:
+        pass
+
     cur = db.cursor()
     cur.execute("SELECT id FROM user WHERE role = 'admin' LIMIT 1;")
     row = cur.fetchone()
@@ -89,3 +96,4 @@ def init_db():
         db.commit()
 
     db.close()
+    
