@@ -124,7 +124,7 @@ const Login = {
       this.loading = true;
       this.error = '';
       try {
-        const res = await fetch('http://localhost:5000/api/auth/login', {
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(this.loginData)
@@ -146,7 +146,7 @@ const Login = {
       this.error = '';
       this.successMsg = '';
       try {
-        const res = await fetch('http://localhost:5000/api/auth/register/student', {
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/register/student`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(this.studentData)
@@ -168,7 +168,7 @@ const Login = {
       this.error = '';
       this.successMsg = '';
       try {
-        const res = await fetch('http://localhost:5000/api/auth/register/company', {
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/register/company`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(this.companyData)

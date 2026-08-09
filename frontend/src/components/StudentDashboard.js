@@ -210,7 +210,7 @@ const StudentDashboard = {
     },
     async fetchProfile() {
       try {
-        const res = await fetch('http://localhost:5000/api/student/profile', {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/profile`, {
           headers: this.getAuthHeaders()
         });
         if (res.ok) {
@@ -229,7 +229,7 @@ const StudentDashboard = {
     },
     async fetchDrives() {
       try {
-        const res = await fetch('http://localhost:5000/api/student/drives', {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/drives`, {
           headers: this.getAuthHeaders()
         });
         if (res.ok) {
@@ -241,7 +241,7 @@ const StudentDashboard = {
     },
     async fetchApplications() {
       try {
-        const res = await fetch('http://localhost:5000/api/student/applications', {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/applications`, {
           headers: this.getAuthHeaders()
         });
         if (res.ok) {
@@ -269,7 +269,7 @@ const StudentDashboard = {
       }
 
       try {
-        const res = await fetch('http://localhost:5000/api/student/profile', {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/profile`, {
           method: 'PUT',
           headers: this.getAuthHeaders(),
           body: formData
@@ -293,7 +293,7 @@ const StudentDashboard = {
     async viewPdf() {
       if (!this.profile.resume_path) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/student/resume/${this.profile.resume_path}`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/resume/${this.profile.resume_path}`, {
           headers: this.getAuthHeaders()
         });
         if (res.ok) {
@@ -312,7 +312,7 @@ const StudentDashboard = {
     },
     async applyToDrive(driveId) {
       try {
-        const res = await fetch(`http://localhost:5000/api/student/drives/${driveId}/apply`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/drives/${driveId}/apply`, {
           method: 'POST',
           headers: this.getAuthHeaders()
         });
@@ -330,7 +330,7 @@ const StudentDashboard = {
       this.exporting = true;
       this.exportMessage = '';
       try {
-        const res = await fetch('http://localhost:5000/api/student/export-csv', {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/export-csv`, {
           method: 'POST',
           headers: this.getAuthHeaders()
         });

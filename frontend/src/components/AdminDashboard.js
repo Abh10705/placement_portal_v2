@@ -214,19 +214,19 @@ const AdminDashboard = {
       drive.showDetails = !drive.showDetails; this.$forceUpdate();
     },
     async fetchStats() {
-      const res = await fetch('http://localhost:5000/api/admin/stats', {
+      const res = await fetch(`${window.API_BASE_URL}/api/admin/stats`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.stats = await res.json();
     },
     async fetchPendingStudents() {
-      const res = await fetch('http://localhost:5000/api/admin/students/pending', {
+      const res = await fetch(`${window.API_BASE_URL}/api/admin/students/pending`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.pendingStudents = await res.json();
     },
     async approveStudent(id, action) {
-      await fetch(`http://localhost:5000/api/admin/students/${id}/${action}`, {
+      await fetch(`${window.API_BASE_URL}/api/admin/students/${id}/${action}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -234,13 +234,13 @@ const AdminDashboard = {
       this.fetchStats();
     },
     async fetchPendingCompanies() {
-      const res = await fetch('http://localhost:5000/api/admin/companies/pending', {
+      const res = await fetch(`${window.API_BASE_URL}/api/admin/companies/pending`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.pendingCompanies = await res.json();
     },
     async approveCompany(id, action) {
-      await fetch(`http://localhost:5000/api/admin/companies/${id}/${action}`, {
+      await fetch(`${window.API_BASE_URL}/api/admin/companies/${id}/${action}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -248,7 +248,7 @@ const AdminDashboard = {
       this.fetchStats();
     },
     async fetchPendingDrives() {
-      const res = await fetch('http://localhost:5000/api/admin/drives/pending', {
+      const res = await fetch(`${window.API_BASE_URL}/api/admin/drives/pending`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) {
@@ -257,7 +257,7 @@ const AdminDashboard = {
       }
     },
     async approveDrive(id, action) {
-      await fetch(`http://localhost:5000/api/admin/drives/${id}/${action}`, {
+      await fetch(`${window.API_BASE_URL}/api/admin/drives/${id}/${action}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -265,13 +265,13 @@ const AdminDashboard = {
       this.fetchStats();
     },
     async fetchAllUsers() {
-      const res = await fetch('http://localhost:5000/api/admin/users', {
+      const res = await fetch(`${window.API_BASE_URL}/api/admin/users`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.allUsers = await res.json();
     },
     async toggleBlacklist(userId) {
-      await fetch(`http://localhost:5000/api/admin/users/${userId}/toggle-blacklist`, {
+      await fetch(`${window.API_BASE_URL}/api/admin/users/${userId}/toggle-blacklist`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -281,7 +281,7 @@ const AdminDashboard = {
       this.loadingReport = true;
       this.reportStatus = '';
       try {
-        const res = await fetch('http://localhost:5000/api/admin/trigger-report', {
+        const res = await fetch(`${window.API_BASE_URL}/api/admin/trigger-report`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });

@@ -109,7 +109,7 @@ const CompanyDashboard = {
         return;
       }
       const token = localStorage.getItem('token');
-      fetch(`http://localhost:5000/api/student/resume/${filename}`, {
+      fetch(`${window.API_BASE_URL}/api/student/resume/${filename}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => {
@@ -123,14 +123,14 @@ const CompanyDashboard = {
       .catch(err => console.error('Error downloading resume:', err));
     },
     async fetchDrives() {
-      const res = await fetch('http://localhost:5000/api/company/drives', {
+      const res = await fetch(`${window.API_BASE_URL}/api/company/drives`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) this.drives = await res.json();
     },
     async createDrive() {
       this.submitting = true;
-      const res = await fetch('http://localhost:5000/api/company/drives', {
+      const res = await fetch(`${window.API_BASE_URL}/api/company/drives`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const CompanyDashboard = {
       }
       const token = localStorage.getItem('token');
       try {
-        const res = await fetch(`http://localhost:5000/api/company/applications/${appId}/status`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/company/applications/${appId}/status`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
